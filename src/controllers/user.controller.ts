@@ -11,7 +11,7 @@ config();
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { email, names, telephone, password } = req.body;
+    const { email, names, telephone, password,role } = req.body;
     console.log("body", req.body);
     const hashedPassword = hashSync(password, 10);
     console.log("hashedPassword", hashedPassword);
@@ -19,6 +19,7 @@ const createUser = async (req: Request, res: Response) => {
       data: {
         email,
         names,
+        role,
         password: hashedPassword,
         telephone,
       },
