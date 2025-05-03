@@ -7,8 +7,9 @@ import { CreateVehicleModelDTO, UpdateVehicleModelDTO } from "../dtos/model.dto"
 const router = Router();
 
 router.post("/", checkAdmin, validationMiddleware(CreateVehicleModelDTO), modelController.createVehicleModel);
-router.get("/",checkLoggedIn, modelController.getVehicleModels);
+router.get("/", modelController.getVehicleModels);
 router.get("/:id",checkLoggedIn, modelController.getVehicleModelById);
+router.get("/paginated",modelController.getAllVehicleModelsPaginated)
 router.put("/:id", checkAdmin, validationMiddleware(UpdateVehicleModelDTO, true), modelController.updateVehicleModel);
 router.delete("/:id", checkAdmin, modelController.deleteVehicleModel);
 

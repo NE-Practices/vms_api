@@ -888,7 +888,7 @@
         }
       }
     },
-  "vehicle-models/search": {
+  "/vehicle-models/search": {
       "get": {
         "tags": ["Vehicle Models"],
         "description": "",
@@ -923,7 +923,7 @@
         ]
       }
     },
-  "vehicle-models/paginated": {
+  "/vehicle-models/paginated": {
       "get": {
         "tags": ["Vehicle Models"],
         "description": "",
@@ -958,7 +958,7 @@
         ]
       }
     },
-  "vehicle-models/all": {
+  "/vehicle-models/all": {
       "get": {
         "tags": ["Vehicle Models"],
         "description": "",
@@ -978,7 +978,7 @@
         ]
       }
     },
-  "vehicle-models/{id}/actions": {
+  "/vehicle-models/{id}/actions": {
       "get": {
         "tags": ["Vehicle Models"],
         "description": "",

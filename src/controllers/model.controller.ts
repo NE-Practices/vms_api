@@ -82,12 +82,41 @@ const deleteVehicleModel = async (req: Request, res: Response) => {
     }
 };
 
+
+const getAllVehicleModelsPaginated = async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const [vehicleModels, total] = await prisma.$transaction([
+      prisma.vehicleModel.findMany({
+        skip,
+        take: limit,
+      }),
+      prisma.vehicleModel.count(),
+    ]);
+
+    return res.status(200).json({
+      data: vehicleModels,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch paginated vehicles", error });
+  }
+};
+
 const modelController = {
     createVehicleModel,
     getVehicleModels,
     getVehicleModelById,
     updateVehicleModel,
     deleteVehicleModel,
+    getAllVehicleModelsPaginated
 };
 
 export default modelController;

@@ -27,7 +27,11 @@ const createVehicle = async (req: Request, res: Response) => {
 
 const getVehicles = async (req: Request, res: Response) => {
     try {
-        const vehicles = await prisma.vehicle.findMany();
+        const vehicles = await prisma.vehicle.findMany({
+          include: {
+            model: true, 
+          },
+        });
         return res.status(200).json(vehicles);
     } catch (error) {
         return res.status(500).json({ message: "Failed to fetch vehicles", error });
@@ -41,11 +45,14 @@ const getAllVehiclesPaginated = async (req: Request, res: Response) => {
 
     try {
         const [vehicles, total] = await prisma.$transaction([
-            prisma.vehicle.findMany({
-                skip,
-                take: limit,
-            }),
-            prisma.vehicle.count(),
+          prisma.vehicle.findMany({
+            skip,
+            take: limit,
+            include: {
+              model: true, 
+            },
+          }),
+          prisma.vehicle.count(),
         ]);
 
         return res.status(200).json({

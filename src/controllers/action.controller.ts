@@ -27,7 +27,12 @@ const createAction = async (req: Request, res: Response) => {
 
 const getActions = async (req: Request, res: Response) => {
     try {
-        const actions = await prisma.action.findMany();
+        const actions = await prisma.action.findMany({
+            include:{
+                vehicle:true,
+                user:true
+            }
+        });
         return res.status(200).json(actions);
     } catch (error) {
         return res.status(500).json({ message: "Failed to fetch actions", error });

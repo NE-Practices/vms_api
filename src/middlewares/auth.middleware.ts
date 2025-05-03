@@ -10,24 +10,26 @@ export const checkLoggedIn: any = (
   next: NextFunction
 ) => {
   try {
-    const token = req.headers.authorization;
-    if (!token)
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return ServerResponse.unauthenticated(res, "You are not logged in");
-    const response = jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY as string,
-      {}
-    );
-    console.log(response)
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const response = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
+
     if (!response)
       return ServerResponse.unauthenticated(res, "You are not logged in");
+
     req.user = { id: (response as any).id };
     next();
   } catch (error) {
-    console.log(error)
-    return ServerResponse.error(res, "Internal server error 500.");
+    console.log("JWT verification error:", error);
+    return ServerResponse.error(res, "Invalid or expired token");
   }
 };
+
 
 export const checkAdmin: any = async (
   req: AuthRequest,

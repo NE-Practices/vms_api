@@ -7,7 +7,7 @@ import { CreateVehicleDTO, UpdateVehicleDTO } from "../dtos/vehicle.dto";
 const router = Router();
 
 router.post("/", checkAdmin, validationMiddleware(CreateVehicleDTO), vehicleController.createVehicle);
-router.get("/", vehicleController.getVehicles);
+router.get("/",vehicleController.getVehicles);
 router.get("/search", vehicleController.searchVehicles);
 router.get("/paginated", vehicleController.getAllVehiclesPaginated);
 router.get("/:id", vehicleController.getVehicleById);
