@@ -60,8 +60,8 @@ model User {
 
 model VehicleModel {
   id       String    @id @default(uuid())
-  name     String    @unique
-  brand    String
+  name     String   
+  brand    String    @unique
   vehicles Vehicle[]
 
   @@map("vehicle_models")

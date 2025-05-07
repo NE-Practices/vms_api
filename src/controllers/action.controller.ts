@@ -54,6 +54,8 @@ const getActionById = async (req: Request, res: Response) => {
     }
 };
 
+
+
 const updateAction = async (req: Request, res: Response) => {
     const { id } = req.params;
     const dto = plainToInstance(UpdateActionDTO, req.body);

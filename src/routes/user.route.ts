@@ -22,7 +22,7 @@ userRouter.put(
   userController.updateUser
 );
 userRouter.get("/me", [checkLoggedIn], userController.me);
-userRouter.get("/all", [checkAdmin], userController.all);
+userRouter.get("/all", checkLoggedIn, userController.all);
 userRouter.get("/:id", [], userController.getById);
 userRouter.get("/search/:query", [], userController.searchUser);
 userRouter.delete("/me", [checkLoggedIn], userController.deleteUser);

@@ -9,6 +9,7 @@ import userRouter from './routes/user.route';
 import swaggerFile from './swagger/doc/swagger.json';
 import ServerResponse from './utils/ServerResponse';
 import router from './routes';
+import morganLogger from './loggers/logger';
 
 config();
 
@@ -19,6 +20,7 @@ const PORT = process.env.PORT
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors({ origin: "*" }))
+app.use(morganLogger)
 app.disable('x-powered-by');
 
 app.use('/api/v1', router)
