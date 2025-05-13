@@ -42,7 +42,8 @@ export const checkAdmin:any = async (
 ) => {
   try {
     let token = req.headers.authorization;
-
+    console.log("Token:", token);
+    console.log("Headers:", req.headers);
     if (!token) {
       return ServerResponse.unauthorized(res, "You are not an admin");
     }

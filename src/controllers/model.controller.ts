@@ -10,6 +10,15 @@ const createVehicleModel = async (req: Request, res: Response) => {
     if (errors.length > 0) {
         return res.status(400).json({ errors });
     }
+    //check if model with this name already exists
+    const existingModel = await prisma.vehicleModel.findFirst({
+        where: {
+            name: dto.name,
+        },
+    });
+    if (existingModel) {
+        return res.status(400).json({ message: "Vehicle model with this name already exists" });
+    }
 
     try {
         const vehicleModel = await prisma.vehicleModel.create({

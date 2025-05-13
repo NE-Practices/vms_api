@@ -9,7 +9,7 @@ datasource db {
 
 enum Role {
   ADMIN // The application admin
-  USER // This is a compuser
+  USER  // This is a compuser
 
   @@map("roles")
 }
@@ -37,6 +37,14 @@ enum ActionType {
   @@map("action_types")
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("request_status")
+}
+
 model User {
   id                   String              @id @default(uuid())
   names                String
@@ -53,14 +61,16 @@ model User {
   passwordResetExpires DateTime?           @map("password_reset_expires")
   createdAt            DateTime            @default(now()) @map("created_at")
   updatedAt            DateTime            @updatedAt @map("updated_at")
-  actions               Action[]
+
+  actions              Action[]
+  vehicleRequests      VehicleRequest[]
 
   @@map("users")
 }
 
 model VehicleModel {
   id       String    @id @default(uuid())
-  name     String   
+  name     String
   brand    String    @unique
   vehicles Vehicle[]
 
@@ -76,19 +86,37 @@ model Vehicle {
   isAvailable Boolean      @default(true) @map("is_available")
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
-  actions     Action[]
+
+  actions          Action[]
+  vehicleRequests  VehicleRequest[]
 
   @@map("vehicles")
 }
 
 model Action {
-  id         String   @id @default(uuid())
-  userId     String   @map("user_id")
-  vehicleId  String   @map("vehicle_id")
+  id         String     @id @default(uuid())
+  userId     String     @map("user_id")
+  vehicleId  String     @map("vehicle_id")
   actionType ActionType @map("action_type")
-  timestamp  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
-  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id])
+  timestamp  DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id])
+  vehicle    Vehicle    @relation(fields: [vehicleId], references: [id])
 
   @@map("actions")
+}
+
+model VehicleRequest {
+  id           String        @id @default(uuid())
+  userId       String        @map("user_id")
+  vehicleId    String        @map("vehicle_id")
+  actionType   ActionType    @map("action_type")
+  status       RequestStatus @default(PENDING)
+  requestedAt  DateTime      @default(now()) @map("requested_at")
+  approvedAt   DateTime?     @map("approved_at")
+
+  user         User          @relation(fields: [userId], references: [id])
+  vehicle      Vehicle       @relation(fields: [vehicleId], references: [id])
+
+  @@map("vehicle_requests")
 }

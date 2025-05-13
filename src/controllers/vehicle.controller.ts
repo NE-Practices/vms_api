@@ -10,6 +10,14 @@ const createVehicle = async (req: Request, res: Response) => {
     if (errors.length > 0) {
         return res.status(400).json({ errors });
     }
+    const existingVehicle = await prisma.vehicle.findFirst({
+        where: {
+            plateNumber: dto.plateNumber,
+        },
+    });
+    if (existingVehicle) {
+        return res.status(400).json({ message: "Vehicle with this plate number already exists" });
+    }
 
     try {
         const vehicle = await prisma.vehicle.create({
@@ -141,6 +149,80 @@ const searchVehicles = async (req: Request, res: Response) => {
     }
 };
 
+
+const approveVehicleRequest = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const request = await prisma.vehicleRequest.findUnique({
+      where: { id },
+      include: { vehicle: true },
+    });
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    if (request.status !== "PENDING") {
+      return res.status(400).json({ message: "Request already processed" });
+    }
+
+    await prisma.vehicleRequest.update({
+      where: { id },
+      data: {
+        status: "APPROVED",
+        approvedAt: new Date(),
+      },
+    });
+
+    // Create Action
+    await prisma.action.create({
+      data: {
+        userId: request.userId,
+        vehicleId: request.vehicleId,
+        actionType: request.actionType,
+      },
+    });
+
+    // Update vehicle availability
+    if (request.actionType === "BOOK" || request.actionType === "USE") {
+      await prisma.vehicle.update({
+        where: { id: request.vehicleId },
+        data: { isAvailable: false },
+      });
+    } else if (request.actionType === "RETURN") {
+      await prisma.vehicle.update({
+        where: { id: request.vehicleId },
+        data: { isAvailable: true },
+      });
+    }
+
+    return res.status(200).json({ message: "Request approved" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error approving request", error });
+  }
+};
+
+
+const getVehicleRequests = async (req: Request, res: Response) => {
+  try {
+    const vehicleRequests = await prisma.vehicleRequest.findMany({
+      include: {
+        vehicle: true,
+        user: true,
+      },
+    });
+    return res.status(200).json(vehicleRequests);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch vehicle requests", error });
+  }
+};
+
+
+
 const vehicleController = {
     createVehicle,
     getVehicles,
@@ -149,6 +231,8 @@ const vehicleController = {
     updateVehicle,
     deleteVehicle,
     searchVehicles,
+    approveVehicleRequest,
+    getVehicleRequests,
 };
 
 export default vehicleController;
